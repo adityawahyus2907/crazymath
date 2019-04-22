@@ -30,9 +30,12 @@
 			// jika status = true (cookie username ada), maka tampilkan username
 			// tanggal terakhir kali main, dan score. Data ini diambil dari cookie
 			// serta tampilkan tombol submit dg nama 'submit2'	
-			echo "<p>Welcome back, ".$_COOKIE['username']."</p>";
-			echo "<p>Sebelumnya, terakhir kali Anda main game ini tanggal ".$_COOKIE['lasttime']." dengan score ".$_COOKIE['score']."</p>";	
-		?>
+			echo "<p>Welcome back, ".$_COOKIE['username'].'!</p>';
+			echo "<img src='photos/".$_COOKIE['filenameupload']."'><br>";
+				 if (isset($_COOKIE['playtime']) and isset($_COOKIE['score'])) {
+			echo "<p>Sebelumnya, terakhir kali Anda main game ini tanggal ".$_COOKIE['playtime']." dengan score ".$_COOKIE['score']."</p>";	
+		}
+		?><a href="logout.php">BUKAN SAYA!!!</a><br>
 			<input type="submit" name="submit2" value="Start !!">
 		<?php		
 			}

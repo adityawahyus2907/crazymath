@@ -12,7 +12,11 @@
         // tanggal dan waktu file diupload 
         $uploadtime = date('YmdHis');
         // setting nama sesuai dengan aturan (namauser-tanggal.ext)
-        $uploadfile = $_POST['username'] . "-" . $uploadtime . "." . pathinfo($_FILES['userfile']['name'],PATHINFO_EXTENSION);
+        $ext=explode(".",$_FILES['userfile']['name']);
+        $ext=end($ext);
+        $ext=strtolower($ext);
+        if ($ext=="jpg"||$ext=="png") {
+        $uploadfile = $_POST['username'] . "-" . $uploadtime . "." . $ext;
         // proses upload file ke folder 'data'
         if (move_uploaded_file($_FILES['userfile']['tmp_name'], $uploaddir.$uploadfile)) {
             echo "File telah diupload";
@@ -20,9 +24,10 @@
             echo "File gagal diupload";
         }
         // set session nama file untuk diupload ke db
-        $_SESSION['filenameupload'] = $uploadfile;
-        setcookie('username', $_POST['username'], time()+3600*24*7);
+        setcookie("filenameupload", $uploadfile, time()+3600*24*7, "/crazymath");
+        setcookie('username', $_POST['username'], time()+3600*24*7, "/crazymath");
         header("Location: action1.php");
+        }
     }
 
 	// jika action.php ini diload dari tombol submit (dari halaman action.php sendiri)
@@ -70,16 +75,16 @@
 	<?php
 		// jika lives = 0, maka game over
 		if ($_SESSION['lives'] == 0){
+			include 'dbconfig.php';
+			
+			$query = "INSERT INTO crazymath (username, score, playtime, foto) VALUES ('".$_COOKIE['username']."', ".$_SESSION['score'].", '".date('Y-m-d H:i:s')."','".$_SESSION['filenameupload']."')";
+			$hasil = mysqli_query($db, $query) or die(mysqli_error());
 			echo "<h2>Game Over !!!</h2>";
 			echo "<p><a href='index.php'>Ulangi Lagi</a></p>";
 			// simpan skor dan waktu main ke dalam cookie
-			setcookie('score', $_SESSION['score'], time()+3600*24*7);
-			setcookie('lasttime', date('d/m/Y H:i'), time()+3600*24*7);
+			setcookie('score', $_SESSION['score'], time()+3600*24*7, "/crazymath");
+			setcookie('playtime', date('d/m/Y H:i'), time()+3600*24*7, "/crazymath");
 			// bagian kode untuk insert data username, score, playtime ke tabel scores
-			include 'dbconfig.php';
-			$db = mysqli_connect($dbhost, $dbuser, $dbpass, $dbname);
-			$query = "INSERT INTO scores (username, score, playtime, foto) VALUES ('".$_COOKIE['username']."', ".$_SESSION['score'].", '".date('Y-m-d H:i:s')."','".$_SESSION['filenameupload']."')";
-			$hasil = mysqli_query($db, $query);
 		} else {
 	?>
 	<form method="post" action="action1.php">
